@@ -3,7 +3,7 @@ package com.whereigo.enumSave;
 import org.springframework.http.HttpMethod;
 
 public enum ApiUrl {
-    GET_ALL_ATTRACTIONS(1, "attraction",HttpMethod.GET,"https://gis.taiwan.net.tw/XMLReleaseALL_public/scenic_spot_C_f.json");
+    GET_ALL_ATTRACTIONS(1, "attraction",HttpMethod.GET,"https://media.taiwan.net.tw/XMLReleaseALL_public/scenic_spot_C_f.json");
 
     private Integer id;
 	private String type;
