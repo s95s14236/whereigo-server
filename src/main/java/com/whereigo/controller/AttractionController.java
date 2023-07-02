@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.whereigo.model.ApiResponse;
 import com.whereigo.model.Attraction;
+import com.whereigo.model.PageResult;
 import com.whereigo.service.AttractionService;
 
 @RestController
@@ -51,9 +52,10 @@ public class AttractionController {
         ApiResponse apiResponse = new ApiResponse();
         log.info("/attraction, page={}, size={}", page, size);
         
-        List<Attraction> attractions = attractionService.getPageAttractions(page, size);
+        PageResult<Attraction> result = attractionService.getPageAttractions(page, size);
         Map<String, Object> data = new HashMap<>();
-        data.put("attractions", attractions);
+        data.put("attractions", result.getAttractions());
+        data.put("nextPage", result.getNextPage());
         apiResponse.setData(data);
         apiResponse.setMessage("get attraction by success");
         apiResponse.setStatusCode(200);
@@ -78,9 +80,10 @@ public class AttractionController {
     ) {
         ApiResponse apiResponse = new ApiResponse();
         log.info("/attraction/region/{}, town={}, page={}, size={}", region, town, page, size);
-        List<Attraction> attractions = attractionService.getPageAttractionsByRegionAndTown(region, town, page, size);
+        PageResult<Attraction> result = attractionService.getPageAttractionsByRegionAndTown(region, town, page, size);
         Map<String, Object> data = new HashMap<>();
-        data.put("attractions", attractions);
+        data.put("attractions", result.getAttractions());
+        data.put("nextPage", result.getNextPage());
         apiResponse.setData(data);
         apiResponse.setMessage("get attraction by success");
         apiResponse.setStatusCode(200);

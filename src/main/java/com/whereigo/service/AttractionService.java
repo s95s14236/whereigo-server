@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.whereigo.enumSave.ApiUrl;
 import com.whereigo.model.Attraction;
 import com.whereigo.model.AttractionsResponse;
+import com.whereigo.model.PageResult;
 import com.whereigo.repository.AttractionRepository;
 import com.whereigo.util.ApiUtil;
 
@@ -45,13 +47,17 @@ public class AttractionService {
      * @param size 一頁幾個景點
      * @return Attraction array
      */
-    public List<Attraction> getPageAttractionsByRegionAndTown(String region, String town, int page, int size) {
+    public PageResult<Attraction> getPageAttractionsByRegionAndTown(String region, String town, int page, int size) {
         // Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending().and(Sort.by(Sort.Order.by("picture1").nullsLast())));
         Pageable pageable = PageRequest.of(page, size, Sort.by("picture1").descending().and(Sort.by("changetime").descending()));
+        Page<Attraction> attractionPage;
         if (town.trim().length() > 0) {
-            return attractionRepository.findAllByRegionAndTown(region, town, pageable).getContent();
+            attractionPage =  attractionRepository.findAllByRegionAndTown(region, town, pageable);
+        } else {
+            attractionPage = attractionRepository.findAllByRegion(region, pageable);
         }
-        return attractionRepository.findAllByRegion(region, pageable).getContent();
+        Integer nextPageNum = attractionPage.hasNext() ? page+1 : null;
+        return new PageResult<Attraction>(attractionPage.getContent(), nextPageNum);
     }
 
     /**
@@ -60,10 +66,12 @@ public class AttractionService {
      * @param size 一頁幾個景點
      * @return Attraction array
      */
-    public List<Attraction> getPageAttractions(int page, int size) {
+    public PageResult<Attraction> getPageAttractions(int page, int size) {
         // Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending().and(Sort.by(Sort.Order.by("picture1").nullsLast()).descending()));
         Pageable pageable = PageRequest.of(page, size, Sort.by("picture1").descending().and(Sort.by("id").descending()));
-        return attractionRepository.findAll(pageable).getContent();
+        Page<Attraction> attractionPage = attractionRepository.findAll(pageable);
+        Integer nextPageNum = attractionPage.hasNext() ? page+1 : null;
+        return new PageResult<Attraction>(attractionPage.getContent(), nextPageNum);
     }
 
     /**
